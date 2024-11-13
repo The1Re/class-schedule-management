@@ -3,6 +3,7 @@ import { defaultEditingDetails, EditingDetails, ScheduleItem } from "../models";
 import { IMyContext, MyContext } from "../pages/TeacherPage";
 import { createId, getAllSchedule, getCollision, sortScheduleByTime, timeToCol, updateSchedule } from "../utils";
 import { orderedDate } from "../utils/constant";
+import { fetchData } from '../utils';
 import Swal from "sweetalert2";
 
 interface EditPopupProps {
@@ -13,10 +14,12 @@ interface EditPopupProps {
 function EditPopup({ selectedSlot, callback } : EditPopupProps) {
     const { teacher, setSchedules } = useContext(MyContext) as IMyContext
     const [ editingDetails, setEditingDetails ] = useState<EditingDetails>(defaultEditingDetails);
+    const [ groups, setGroups ] = useState<string[]>([])
 
     useEffect(() => {
         if (selectedSlot) 
             setEditingDetails({...selectedSlot})
+        setGroups(fetchData('groups'))
     }, [selectedSlot])
 
     const isFormValid = (edit: EditingDetails) => {
@@ -135,12 +138,15 @@ function EditPopup({ selectedSlot, callback } : EditPopupProps) {
             <h2 className="text-lg font-bold mb-4">Edit Schedule</h2>
             <label className="block mb-2">
             Day:
-            <input
-                type="text"
+            <select
                 value={editingDetails.day}
                 onChange={(e) => setEditingDetails({ ...editingDetails, day: e.target.value })}
                 className="border border-gray-300 p-2 rounded-md w-full"
-            />
+            >
+                {
+                    orderedDate.map((date, idx) => <option key={idx} value={date}>{date}</option>)
+                }
+            </select>
             </label>
             <label className="block mb-2">
             Subject:
@@ -171,12 +177,15 @@ function EditPopup({ selectedSlot, callback } : EditPopupProps) {
             </label>
             <label className="block mb-2">
             Group:
-            <input
-                type="text"
+            <select
                 value={editingDetails.group}
                 onChange={(e) => setEditingDetails({ ...editingDetails, group: e.target.value })}
                 className="border border-gray-300 p-2 rounded-md w-full"
-            />
+            >
+                {
+                    groups.map((group, idx) => <option key={idx} value={group}>{group}</option>)
+                }
+            </select>
             </label>
             <label className="block mb-2">
             Room:
